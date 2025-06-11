@@ -52,9 +52,16 @@ class Tasks
     #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'task')]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, TimeSpend>
+     */
+    #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'task')]
+    private Collection $timeSpends;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->timeSpends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,6 +201,36 @@ class Tasks
             // set the owning side to null (unless already changed)
             if ($comment->getTask() === $this) {
                 $comment->setTask(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TimeSpend>
+     */
+    public function getTimeSpends(): Collection
+    {
+        return $this->timeSpends;
+    }
+
+    public function addTimeSpend(TimeSpend $timeSpend): static
+    {
+        if (!$this->timeSpends->contains($timeSpend)) {
+            $this->timeSpends->add($timeSpend);
+            $timeSpend->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimeSpend(TimeSpend $timeSpend): static
+    {
+        if ($this->timeSpends->removeElement($timeSpend)) {
+            // set the owning side to null (unless already changed)
+            if ($timeSpend->getTask() === $this) {
+                $timeSpend->setTask(null);
             }
         }
 

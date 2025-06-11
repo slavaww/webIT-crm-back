@@ -49,10 +49,17 @@ class Clients
     #[ORM\OneToMany(targetEntity: TimeSets::class, mappedBy: 'client')]
     private Collection $timeSets;
 
+    /**
+     * @var Collection<int, TimeSpend>
+     */
+    #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'client')]
+    private Collection $timeSpends;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->timeSets = new ArrayCollection();
+        $this->timeSpends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,6 +205,36 @@ class Clients
             // set the owning side to null (unless already changed)
             if ($timeSet->getClient() === $this) {
                 $timeSet->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TimeSpend>
+     */
+    public function getTimeSpends(): Collection
+    {
+        return $this->timeSpends;
+    }
+
+    public function addTimeSpend(TimeSpend $timeSpend): static
+    {
+        if (!$this->timeSpends->contains($timeSpend)) {
+            $this->timeSpends->add($timeSpend);
+            $timeSpend->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimeSpend(TimeSpend $timeSpend): static
+    {
+        if ($this->timeSpends->removeElement($timeSpend)) {
+            // set the owning side to null (unless already changed)
+            if ($timeSpend->getClient() === $this) {
+                $timeSpend->setClient(null);
             }
         }
 
