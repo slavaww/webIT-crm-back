@@ -28,9 +28,16 @@ class Employee
     #[ORM\OneToMany(targetEntity: Tasks::class, mappedBy: 'worker')]
     private Collection $tasks;
 
+    /**
+     * @var Collection<int, TimeSpend>
+     */
+    #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'worker')]
+    private Collection $timeSpends;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->timeSpends = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -86,6 +93,36 @@ class Employee
             // set the owning side to null (unless already changed)
             if ($task->getWorker() === $this) {
                 $task->setWorker(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TimeSpend>
+     */
+    public function getTimeSpends(): Collection
+    {
+        return $this->timeSpends;
+    }
+
+    public function addTimeSpend(TimeSpend $timeSpend): static
+    {
+        if (!$this->timeSpends->contains($timeSpend)) {
+            $this->timeSpends->add($timeSpend);
+            $timeSpend->setWorker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTimeSpend(TimeSpend $timeSpend): static
+    {
+        if ($this->timeSpends->removeElement($timeSpend)) {
+            // set the owning side to null (unless already changed)
+            if ($timeSpend->getWorker() === $this) {
+                $timeSpend->setWorker(null);
             }
         }
 
