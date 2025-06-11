@@ -37,10 +37,6 @@ class SettingsController extends AbstractController
             );
             $user->setPassword($hashedPassword);
 
-            // Устанавливаем выбранную роль
-            // $selectedRole = $form->get('roles')->getData();
-            // $user->setRoles([$selectedRole]);
-            
             $em->persist($user);
             $em->flush();
             
@@ -72,12 +68,6 @@ class SettingsController extends AbstractController
             'is_edit' => true
         ]);
 
-        // Получаем текущую роль (первую из массива)
-        // $currentRole = $user->getRoles()[0] ?? 'ROLE_USER';
-        
-        // Устанавливаем текущую роль в форму
-        // $form->get('roles')->setData($currentRole);
-        
         $form->setData($formData);
         $form->handleRequest($request);
         
@@ -90,10 +80,6 @@ class SettingsController extends AbstractController
                 );
                 $user->setPassword($hashedPassword);
             }
-            
-            // Обновляем роль
-            // $selectedRole = $form->get('roles')->getData();
-            // $user->setRoles([$selectedRole]);
             
             $em->flush();
             

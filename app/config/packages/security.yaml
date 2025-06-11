@@ -26,7 +26,7 @@ security:
                 default_target_path: /crm
             logout:
                 path: app_logout
-                target: login
+                target: app_login
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
