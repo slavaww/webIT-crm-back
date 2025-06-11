@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block html_class %}h-100{% endblock %}
+{% block title %}Войти{% endblock %}
+{% block body_class %}h-100 d-flex align-items-center py-4 bg-light{% endblock %}
+{% block body %}
+<main class="form-signin h-100 w-100 m-auto">
+    <div class="row mb-4">
+        <div class="col-12 col-md-6 col-lg-4 mx-auto">
+            <h1 class="text-center h3 mb-3 fw-normal">{{ 'form.login.title'|trans({}, 'messages') }}</h1>
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {{ form_start(form) }}
+                {{ form_row(form.email, {
+                    'attr': {'name': '_username'} }
+                ) }}
+                {{ form_row(form.password) }}
+                {{ form_row(form._remember_me) }}
+                
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="btn btn-primary w-100 py-2 mt-3" type="submit">{{ 'form.login.submit'|trans }}</button>
+                {{ form_rest(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+</main>
+{% endblock %}

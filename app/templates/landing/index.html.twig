@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}WebIT CRM{% endblock %}
+
+{% block body %}
+    <h1>Добро пожаловать в нашу CRM-систему!</h1>
+    <p>Здесь вы можете взаимодействовать с нашей IT-командой, ставить задачи и отслеживать прогресс.</p>
+
+    <a href="{{ path('app_login') }}" class="btn btn-primary">
+        Авторизация
+    </a>
+    {# {% if app.environment == 'dev' %}
+    <div>TEST TEST</div>
+    {% endif %} #}
+{% endblock %}

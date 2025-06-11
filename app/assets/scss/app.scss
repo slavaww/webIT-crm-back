@@ -1,0 +1,15 @@
+$primary: #42a5f5;
+$danger: #ff5252;
+
+// Импортируем Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+/* Ваши кастомные стили */
+body {
+    background-color: lighten($primary, 45%);
+}
+
+.custom-class {
+    @extend .alert;
+    @extend .alert-primary;
+}
