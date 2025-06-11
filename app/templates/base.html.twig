@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html class="{% block html_class %}main-layout{% endblock %}">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="{{ asset('styles/bootstrap.min.css') }}">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="{% block body_class %}main-page{% endblock %}">
+        <div class="container">
+        {% block body %}{% endblock %}
+        </div>
+        {% block javascripts %}
+            {# {% block importmap %}{{ importmap('app') }}{% endblock %} #}
+        {% endblock %}
+    </body>
+</html>
