@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ClientsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientsRepository::class)]
@@ -34,6 +36,17 @@ class Clients
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?ClientsEmerg $client_emrg = null;
+
+    /**
+     * @var Collection<int, Tasks>
+     */
+    #[ORM\OneToMany(targetEntity: Tasks::class, mappedBy: 'client')]
+    private Collection $tasks;
+
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -120,6 +133,36 @@ class Clients
     public function setClientEmrg(?ClientsEmerg $client_emrg): static
     {
         $this->client_emrg = $client_emrg;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tasks>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Tasks $task): static
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Tasks $task): static
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getClient() === $this) {
+                $task->setClient(null);
+            }
+        }
 
         return $this;
     }
