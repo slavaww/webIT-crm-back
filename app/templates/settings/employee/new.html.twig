@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Новый сотрудник{% endblock %}
+
+{% block body %}
+    <h1>Добавление нового сотрудника</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.job_title) }}
+        {{ form_row(form.user_id) }}
+        <button type="submit" class="btn btn-success mt-3">Создать</button>
+    {{ form_end(form) }}
+{% endblock %}

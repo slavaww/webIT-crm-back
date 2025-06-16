@@ -4,10 +4,16 @@
 
 {% block body %}
     <div class="row mt-4">
-        <div class="col-12 col-md-9">
+        <div class="col-12 col-md-8">
             <h1>Управление пользователями</h1>
         </div>
-        <div class="col-12 col-md-3 text-right">
+        <div class="col-12 col-md-4 text-end">
+            <a href="{{ path('app_settings_employees') }}" class="btn btn-primary">
+                Сотрудники
+            </a>
+            <a href="{{ path('app_clients') }}" class="btn btn-primary">
+                Клиенты
+            </a>
             <a href="{{ path('app_crm') }}" class="btn btn-primary">
                 Назад
             </a>
@@ -28,6 +34,7 @@
     </div>
 
     <h2>Список пользователей</h2>
+    {# {{ dump(users) }} #}
     <table class="table">
         <thead>
             <tr>
@@ -49,4 +56,5 @@
         {% endfor %}
         </tbody>
     </table>
+
 {% endblock %}

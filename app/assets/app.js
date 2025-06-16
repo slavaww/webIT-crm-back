@@ -1,12 +1,16 @@
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
-import './styles/app.css';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './React/src/App';
+// import './React/src/assets/scss/crm.scss';
 
-// Подключаем главный SCSS файл
-import './scss/app.scss';
+const container = document.getElementById('root');
+const root = createRoot(container);
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+root.render(
+  <React.StrictMode>
+    <BrowserRouter basename="/crm">
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);

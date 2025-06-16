@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Новый клиент{% endblock %}
+
+{% block body %}
+    <h1>Создание нового клиента</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.job_title) }}
+        {{ form_row(form.phone) }}
+        {{ form_row(form.email) }}
+
+        {# Это поле теперь будет выпадающим списком со свободными пользователями #}
+        {{ form_row(form.user_id) }}
+
+        <button type="submit" class="btn btn-success mt-3">Создать клиента</button>
+    {{ form_end(form) }}
+{% endblock %}
