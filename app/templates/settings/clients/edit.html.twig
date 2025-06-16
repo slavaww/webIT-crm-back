@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактировать клиента{% endblock %}
+
+{% block body %}
+    <h1>Редактирование клиента: {{ client.title }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.phone) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.job_title) }}
+        {{ form_row(form.user_id) }}
+        <button type="submit" class="btn btn-primary mt-3">Сохранить изменения</button>
+    {{ form_end(form) }}
+
+        {# <fieldset class="mt-4"> #}
+            {# <legend>Данные для входа пользователя</legend> #}
+            {# <p>Email: {{ client.userId.email }}</p> #}
+            {# {{ form_row(form.user_id.password) }} #}
+        {# </fieldset> #}
+{% endblock %}
