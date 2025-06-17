@@ -6,13 +6,35 @@ use App\Repository\ClientsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientsRepository::class)]
+#[ApiResource(
+    operations: [
+        // Разрешаем получать (GET) свой профиль
+        new Get(
+            normalizationContext: ['groups' => ['client:read']],
+            security: "is_granted('CLIENT_EDIT', object)"
+        ),
+        // Разрешаем обновлять (PATCH) свой профиль
+        new Patch(
+            denormalizationContext: ['groups' => ['client:write']],
+            security: "is_granted('CLIENT_EDIT', object)"
+        )
+    ],
+    // Контекст для всех операций по умолчанию
+    normalizationContext: ['groups' => ['client:read']],
+    denormalizationContext: ['groups' => ['client:write']]
+)]
 class Clients
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['client:read'])] // ID можно только читать
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -20,18 +42,23 @@ class Clients
     private ?User $user_id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['client:read', 'client:write'])] // Название можно читать и писать
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])] // Описание можно читать и писать
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])] // Должность можно читать и писать
     private ?string $job_title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
     private ?string $email = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

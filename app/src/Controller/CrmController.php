@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CrmController extends AbstractController
 {
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    // #[IsGranted('IS_AUTHENTICATED_FULLY')]
     #[Route('/crm/{reactRoute}', name: 'app_crm', requirements: ['reactRoute' => '.+'], defaults: ['reactRoute' => null])]
     public function index(): Response
     {

@@ -18,3 +18,14 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Event\JWTEventListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    # Регистрируем кастомный обработчик
+    App\Security\AuthenticationSuccessHandler:
+        # Внедряем стандартный обработчик от Lexik, чтобы мы могли его вызвать
+        parent: lexik_jwt_authentication.handler.authentication_success
+        # Делаем сервис публичным, чтобы его можно было использовать в security.yaml
+        public: true 
