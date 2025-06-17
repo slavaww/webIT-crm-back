@@ -5,3 +5,4 @@
 !app/
 !app/*
 !app/**
+.DS_Store
