@@ -1,46 +1,58 @@
+# app/config/packages/security.yaml
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
-        # used to reload user from session & other features (e.g. switch_user)
+
+    # Порядок файрволов очень важен
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # Файрвол для получения JWT и создания сессии
+        login:
+            pattern: ^/api/login
+            stateless: true
+            methods: [POST]
+            json_login:
+                check_path: /api/login
+                # ИСПОЛЬЗУЕМ НАШ КАСТОМНЫЙ ОБРАБОТЧИК
+                success_handler: App\Security\AuthenticationSuccessHandler
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        # Файрвол для защиты остального API с помощью JWT
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+        # ОСНОВНОЙ ФАЙРВОЛ ДЛЯ TWIG-СТРАНИЦ (админка, SPA-загрузчик)
+        # Он STATEFUL (работает с сессиями)
         main:
+            pattern: ^/
             lazy: true
             provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                enable_csrf: true
-                username_parameter: "login_form[email]"
-                password_parameter: "login_form[password]"
-                default_target_path: /crm
+            # Этот файрвол будет проверять сессионные cookie
+            
+            # Указываем, как выйти из сессии
             logout:
-                path: app_logout
-                target: app_login
+                path: /logout # Можете создать роут для этого или React будет делать это через удаление токена
+                # path: app_logout # Можете создать роут для этого или React будет делать это через удаление токена
+                target: / # Куда перенаправить после выхода
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
-        # - { path: ^/crm, roles: [IS_AUTHENTICATED_FULLY, ROLE_SUPER_ADMIN] }
-        - { path: ^/login, roles: PUBLIC_ACCESS }
+        # Публичный доступ к API логина
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        # Все остальное API требует JWT
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+        # Защита админ-панели. Теперь она будет работать, т.к. файрвол main ищет сессию.
         - { path: ^/settings, roles: ROLE_SUPER_ADMIN }
 
 when@test:

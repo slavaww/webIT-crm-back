@@ -5,31 +5,24 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use App\Form\LoginFormType;
-use Symfony\Component\Form\FormFactoryInterface;
-
 final class LoginController extends AbstractController
 {
+    /**
+     * Этот маршрут перехватывает все обращения к старой странице входа
+     * и перенаправляет их на новую страницу входа в SPA.
+     */
     #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, FormFactoryInterface $formFactory): Response
+    public function redirectToSpaLogin(): Response
     {
+        // Если пользователь уже аутентифицирован (например, по сессии),
+        // ему не нужно снова видеть страницу входа. Отправим его сразу в CRM.
         if ($this->getUser()) {
             return $this->redirectToRoute('app_crm');
         }
-        // $form = $formFactory->create(LoginFormType::class);
-        $form = $this->createForm(LoginFormType::class);
 
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render('login/index.html.twig', [
-            'form' => $form,
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
+        // Перенаправляем на маршрут, который рендерит SPA,
+        // передавая ему параметр, чтобы React Router открыл нужную страницу.
+        return $this->redirectToRoute('app_crm', ['reactRoute' => 'login']);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
