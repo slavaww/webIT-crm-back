@@ -25,6 +25,9 @@ class JWTEventListener
         $user = $event->getUser();
         $payload = $event->getData();
 
+        // Добавляем роли пользователя в payload
+        $payload['roles'] = $user->getRoles();
+
         // Находим клиента, связанного с этим пользователем
         $client = $this->clientsRepository->findOneBy(['user_id' => $user]);
 
