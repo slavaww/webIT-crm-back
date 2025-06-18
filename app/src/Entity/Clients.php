@@ -62,6 +62,8 @@ class Clients
     private ?string $email = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')] 
+    #[Groups(['client:read', 'client:write'])]
     private ?ClientsEmerg $client_emrg = null;
 
     /**

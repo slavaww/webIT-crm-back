@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ClientsEmergRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientsEmergRepository::class)]
 class ClientsEmerg
@@ -11,19 +12,24 @@ class ClientsEmerg
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['client:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['client:read', 'client:write'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
     private ?string $job_title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $emal = null;
+    #[Groups(['client:read', 'client:write'])]
+    private ?string $email = null;
 
     public function getId(): ?int
     {
@@ -66,14 +72,14 @@ class ClientsEmerg
         return $this;
     }
 
-    public function getEmal(): ?string
+    public function getEmail(): ?string
     {
-        return $this->emal;
+        return $this->email;
     }
 
-    public function setEmal(?string $emal): static
+    public function setEmail(?string $email): static
     {
-        $this->emal = $emal;
+        $this->email = $email;
 
         return $this;
     }
