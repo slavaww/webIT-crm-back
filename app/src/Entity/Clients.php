@@ -61,8 +61,7 @@ class Clients
     #[Groups(['client:read', 'client:write'])]
     private ?string $email = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')] 
+    #[ORM\OneToOne(targetEntity: ClientsEmerg::class, cascade: ['persist', 'remove'], orphanRemoval: true)] 
     #[Groups(['client:read', 'client:write'])]
     private ?ClientsEmerg $client_emrg = null;
 
