@@ -47,7 +47,8 @@ class EmployeeType extends AbstractType
                        // Используем DQL подзапроса
                        ->andWhere($qb->expr()->notIn('u.id', $subQuery->getDQL()))
                        // Устанавливаем первый параметр (:role) на основном построителе
-                       ->setParameter('role', '%"ROLE_ADMIN"%');
+                       ->setParameter('role', '%"ROLE_ADMIN"%')
+                       ->setParameter('role', '%"ROLE_SUPER_ADMIN"%');
 
                     // А теперь, если нужно, устанавливаем второй параметр (:current_user_id)
                     // также НА ОСНОВНОМ построителе.
