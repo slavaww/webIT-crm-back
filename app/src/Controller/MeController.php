@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+// use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[Route('/api/me')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -29,6 +31,7 @@ class MeController extends AbstractController
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher
     ): Response {
+        /** @var User|null $user */
         $user = $this->getUser();
 
         // Десериализуем входящие данные в существующий объект пользователя

@@ -6,7 +6,18 @@ use App\Repository\EmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Patch;
 
+#[ApiResource(
+    operations: [
+        new Patch(
+            denormalizationContext: ['groups' => ['employee:write']],
+            // Защищаем эндпоинт с помощью Voter'а
+            security: "is_granted('EMPLOYEE_EDIT', object)"
+        ),
+    ]
+)]
 #[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 class Employee
 {
