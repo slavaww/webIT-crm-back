@@ -64,6 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $comments;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["user:read", "user:write"])]
     private ?string $avatar_url = null;
 
     public function __construct()
@@ -286,5 +287,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->avatar_url = $avatar_url;
 
         return $this;
+    }
+
+    /**
+     * "ВИРТУАЛЬНОЕ" СВОЙСТВО.
+     * Этот метод будет автоматически вызван сериализатором,
+     * а его результат будет добавлен в JSON под ключом "avatar".
+     */
+    #[Groups(["user:read"])] // <-- Ключевая аннотация
+    public function getAvatar(): string
+    {
+        // 1. Если кастомный URL указан, возвращаем его.
+        if ($this->avatar_url) {
+            return $this->avatar_url;
+        }
+
+        // 2. Иначе, генерируем URL для Gravatar.
+        $email = $this->getEmail() ?? ''; // Используем email текущего пользователя
+        $hash = md5(strtolower(trim($email)));
+        return sprintf('https://www.gravatar.com/avatar/%s?d=mp&s=200', $hash);
     }
 }
