@@ -39,7 +39,7 @@ class UserRegistrationType extends AbstractType
                 'choices' => [
                     'Клиент' => 'ROLE_USER',
                     'Сотрудник' => 'ROLE_ADMIN',
-                    'Супер-администратор' => 'ROLE_SUPER_ADMIN',
+                    'Администратор' => 'ROLE_SUPER_ADMIN',
                 ],
                 'label' => 'Роль',
                 'placeholder' => 'Выберите роль',
