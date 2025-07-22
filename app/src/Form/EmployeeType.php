@@ -50,7 +50,7 @@ class EmployeeType extends AbstractType
                        ->setParameter('role', '%"ROLE_ADMIN"%')
                        ->setParameter('role', '%"ROLE_SUPER_ADMIN"%');
 
-                    // А теперь, если нужно, устанавливаем второй параметр (:current_user_id)
+                    // Устанавливаем второй параметр (:current_user_id)
                     // также НА ОСНОВНОМ построителе.
                     if ($options['current_employee_user_id']) {
                         $qb->setParameter('current_user_id', $options['current_employee_user_id']);
