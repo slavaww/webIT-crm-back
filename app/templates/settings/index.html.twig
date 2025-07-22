@@ -47,7 +47,15 @@
         {% for user in users %}
             <tr>
                 <td>{{ user.email }}</td>
-                <td>{{ (user.roles|first) }}</td>
+                <td>
+                {% if (user.roles|first) == 'ROLE_ADMIN' %}
+                Сотрудник
+                {% elseif (user.roles|first) == 'ROLE_USER' %}
+                Клиент
+                {% elseif (user.roles|first) == 'ROLE_SUPER_ADMIN' %}
+                Администратор
+                {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">Редактировать</a>
                     <a href="{{ path('app_user_delete', {'id': user.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены?')">Удалить</a>
