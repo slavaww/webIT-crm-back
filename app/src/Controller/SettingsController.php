@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Clients;
 use App\Entity\Employee;
+use App\Entity\Statuses;
 use App\Form\EmployeeType;
 use App\Form\UserRegistrationType;
 use App\Form\ClientRegistrationType;
+use App\Form\StatusesTypeForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,6 +113,11 @@ class SettingsController extends AbstractController
         $this->addFlash('success', 'Пользователь удален!');
         return $this->redirectToRoute('app_settings');
     }
+
+     /**
+     * Clients settings
+     *
+     */
 
     #[Route('/clients', name: 'app_clients')]
     public function clients(EntityManagerInterface $em): Response
@@ -258,4 +265,72 @@ class SettingsController extends AbstractController
         return $this->redirectToRoute('app_settings_employees');
     }
 
+    /**
+     * Statuses settings
+     *
+     */
+
+    #[Route('/statuses', name: 'app_settings_statuses')]
+    public function statuses(
+        Request $request,
+        EntityManagerInterface $em
+        ): Response
+    {
+        
+        $status = new Statuses();
+        $form = $this->createForm(StatusesTypeForm::class, $status);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $status->setStatus($form->get('status')->getData());
+            $em->persist($status);
+            $em->flush();
+            
+            $this->addFlash('success', 'Статус успешно создан!');
+            return $this->redirectToRoute('app_settings_statuses');
+        }
+        
+        $statuses = $em->getRepository(Statuses::class)->findAll();
+
+        return $this->render('settings/statuses/index.html.twig', [
+            'form' => $form->createView(),
+            'statuses' => $statuses,
+        ]);
+    }
+
+    #[Route('/statuses/edit/{id}', name: 'app_settings_statuses_edit')]
+    public function editStatus(
+        Statuses $status,
+        Request $request,
+        EntityManagerInterface $em
+        ): Response
+    {
+        $form = $this->createForm(StatusesTypeForm::class, $status, [
+            'current_status_id' => $status->getId(),
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Статус обновлен!');
+            return $this->redirectToRoute('app_settings_statuses');
+        }
+
+        return $this->render('settings/statuses/edit.html.twig', [
+            'form' => $form->createView(),
+            'status' => $status,
+        ]);
+    }
+
+     #[Route('/statuses/delete/{id}', name: 'app_settings_statuses_delete')]
+     public function deleteStatus(Statuses $status, EntityManagerInterface $em): Response
+     {
+        $em->remove($status);
+        $em->flush();
+
+        $this->addFlash('success', 'Статус удален!');
+        return $this->redirectToRoute('app_settings_statuses');
+     }
+    
 }

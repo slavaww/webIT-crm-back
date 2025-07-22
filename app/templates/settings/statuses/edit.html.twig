@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактировать статусы задач{% endblock %}
+
+{% block body %}
+    <h1>Редактирование статуса задачи</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.status) }}
+        <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+    {{ form_end(form) }}
+{% endblock %}

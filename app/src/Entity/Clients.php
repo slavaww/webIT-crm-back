@@ -34,7 +34,7 @@ class Clients
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['client:read'])] // ID можно только читать
+    #[Groups(['client:read'])]
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -42,15 +42,15 @@ class Clients
     private ?User $user_id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['client:read', 'client:write'])] // Название можно читать и писать
+    #[Groups(['client:read', 'client:write'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['client:read', 'client:write'])] // Описание можно читать и писать
+    #[Groups(['client:read', 'client:write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['client:read', 'client:write'])] // Должность можно читать и писать
+    #[Groups(['client:read', 'client:write'])]
     private ?string $job_title = null;
 
     #[ORM\Column(length: 255, nullable: true)]

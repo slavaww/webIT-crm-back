@@ -4,19 +4,22 @@
 
 {% block body %}
     <div class="row mt-4">
-        <div class="col-12 col-md-8">
-            <h1>Управление пользователями</h1>
-        </div>
-        <div class="col-12 col-md-4 text-end">
+        <div class="col-12 text-end">
             <a href="{{ path('app_settings_employees') }}" class="btn btn-primary">
                 Сотрудники
             </a>
             <a href="{{ path('app_clients') }}" class="btn btn-primary">
                 Клиенты
             </a>
-            <a href="{{ path('app_crm') }}" class="btn btn-primary">
-                Назад
+            <a href="{{ path('app_settings_statuses') }}" class="btn btn-primary">
+                Статусы
             </a>
+            <a href="{{ path('app_crm') }}" class="btn btn-primary">
+                Выйти из настроек
+            </a>
+        </div>
+        <div class="col-12 mt-4 text-center">
+            <h1>Управление пользователями</h1>
         </div>
     </div>
 
