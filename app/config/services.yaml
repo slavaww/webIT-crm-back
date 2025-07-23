@@ -29,3 +29,9 @@ services:
         parent: lexik_jwt_authentication.handler.authentication_success
         # Делаем сервис публичным, чтобы его можно было использовать в security.yaml
         public: true 
+
+    App\State\TasksProcessor:
+        arguments:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+        tags:
+            - { name: 'api_platform.state_processor',  _api_resource_class: App\Entity\Tasks }

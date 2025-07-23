@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -18,6 +19,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(
             normalizationContext: ['groups' => ['client:read']],
             security: "is_granted('CLIENT_EDIT', object)"
+        ),
+        new GetCollection(
+            normalizationContext: ['groups' => ['client:read']],
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER')"
         ),
         // Разрешаем обновлять (PATCH) свой профиль
         new Patch(
@@ -39,6 +44,7 @@ class Clients
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['client:read', 'client:write'])]
     private ?User $user_id = null;
 
     #[ORM\Column(length: 255)]

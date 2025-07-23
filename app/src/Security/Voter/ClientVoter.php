@@ -8,9 +8,17 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+use Psr\Log\LoggerInterface; // Remove later!!!
 class ClientVoter extends Voter
 {
     const CLIENT_EDIT = 'CLIENT_EDIT';
+    private LoggerInterface $logger; // Remove later!!!
+
+    // Remove later!!!
+    public function __construct( LoggerInterface $logger )
+    {
+        $this->logger = $logger; // Remove later!!!
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -23,6 +31,7 @@ class ClientVoter extends Voter
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
+        $this->logger->debug('WWWWWWWW. ClientVoter ranning!!! voteOnAttribute'); // Remove later!!!
 
         // Если пользователь не авторизован, доступ запрещен
         if (!$user instanceof UserInterface) {

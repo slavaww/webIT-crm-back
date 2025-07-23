@@ -6,16 +6,35 @@ use App\Repository\StatusesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: StatusesRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['status:read']]
+        ),
+        new Get(
+            normalizationContext: ['groups' => ['status:read']]
+        )
+    ],
+    normalizationContext: ['groups' => ['status:read']],
+    denormalizationContext: ['groups' => ['status:write']]
+)]
 class Statuses
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['status:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['status:read', 'status:write'])]
     private ?string $status = null;
 
     /**

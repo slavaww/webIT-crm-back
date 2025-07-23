@@ -7,61 +7,111 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
+// use Symfony\Component\Security\Http\Attribute\IsGranted;
+// use Symfony\Bundle\SecurityBundle\Security;
+use App\Entity\User;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: TasksRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['task:read']],
+    denormalizationContext: ['groups' => ['task:write']],
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['task:read']],
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER') or is_granted('TASK_VIEW', object)",
+        ),
+        new Get(
+            security: "is_granted('TASK_VIEW', object)",
+            normalizationContext: ['groups' => ['task:read']]
+        ),
+        new Post(
+            processor: \App\State\TasksProcessor::class,
+            security: "is_granted('TASK_CREATE')",
+        ),
+        new Patch(
+            security: "is_granted('TASK_EDIT', object)"
+        ),
+        new Delete(
+            security: "is_granted('TASK_DELETE', object)"
+        ),
+    ]
+)]
 class Tasks
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['task:read', 'task:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['task:read'])]
     private ?\DateTime $create_date = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
+    #[Ignore]
     private ?User $creator = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
     private ?Clients $client = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
     private ?\DateTime $start_time = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
     private ?\DateTime $end_time = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['task:read', 'task:write'])]
+    #[Ignore]
     private ?Statuses $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[Groups(['task:read', 'task:write'])]
     private ?Employee $worker = null;
 
     /**
      * @var Collection<int, Comments>
      */
     #[ORM\OneToMany(targetEntity: Comments::class, mappedBy: 'task')]
+    #[Groups(['task:read'])]
     private Collection $comments;
 
     /**
      * @var Collection<int, TimeSpend>
      */
     #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'task')]
+    #[Groups(['task:read'])]
     private Collection $timeSpends;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
         $this->timeSpends = new ArrayCollection();
+        $this->create_date = new \DateTime();
     }
 
     public function getId(): ?int

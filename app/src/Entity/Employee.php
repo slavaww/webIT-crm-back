@@ -7,42 +7,67 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['employee:read']],
+    denormalizationContext: ['groups' => ['employee:write']],
     operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER')",
+            normalizationContext: ['groups' => ['employee:read']]
+        ),
         new Patch(
             denormalizationContext: ['groups' => ['employee:write']],
             // Защищаем эндпоинт с помощью Voter'а
             security: "is_granted('EMPLOYEE_EDIT', object)"
         ),
+        new Get(
+            security: "is_granted('EMPLOYEE_VIEW', object)"
+        ),
+        new Post(
+            security: "is_granted('EMPLOYEE_CREATE', object)"
+        ),
+        new Delete(
+            security: "is_granted('EMPLOYEE_DELETE', object)"
+        ),
     ]
 )]
-#[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 class Employee
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['employee:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['employee:read', 'employee:write'])]
     private ?string $job_title = null;
 
     #[ORM\OneToOne(inversedBy: 'employee', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['employee:read', 'employee:write'])]
     private ?User $user_id = null;
 
     /**
      * @var Collection<int, Tasks>
      */
     #[ORM\OneToMany(targetEntity: Tasks::class, mappedBy: 'worker')]
+    #[Groups(['employee:read'])]
     private Collection $tasks;
 
     /**
      * @var Collection<int, TimeSpend>
      */
     #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'worker')]
+    #[Groups(['employee:read'])]
     private Collection $timeSpends;
 
     public function __construct()
