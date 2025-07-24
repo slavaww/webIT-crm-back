@@ -14,10 +14,13 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Symfony\Component\Serializer\Annotation\Groups;
-// use Symfony\Component\Security\Http\Attribute\IsGranted;
-// use Symfony\Bundle\SecurityBundle\Security;
 use App\Entity\User;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use App\Entity\Statuses;
+use App\Entity\Clients;
+use App\Entity\Employee;
+use App\Entity\Comments;
+use App\Entity\TimeSpend;
+use App\State\TasksCollectionProvider;
 
 #[ORM\Entity(repositoryClass: TasksRepository::class)]
 #[ApiResource(
@@ -26,7 +29,7 @@ use Symfony\Component\Serializer\Annotation\Ignore;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['task:read']],
-            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER') or is_granted('TASK_VIEW', object)",
+            provider: TasksCollectionProvider::class,
         ),
         new Get(
             security: "is_granted('TASK_VIEW', object)",
@@ -67,29 +70,28 @@ class Tasks
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
-    #[Ignore]
     private ?User $creator = null;
-
+    
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
     private ?Clients $client = null;
-
+    
     #[ORM\Column(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
     private ?\DateTime $start_time = null;
-
+    
     #[ORM\Column(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
     private ?\DateTime $end_time = null;
-
+    
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
-    #[Ignore]
     private ?Statuses $status = null;
-
+    
     #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['task:read', 'task:write'])]
     private ?Employee $worker = null;
 

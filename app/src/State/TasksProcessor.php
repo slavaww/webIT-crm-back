@@ -12,32 +12,25 @@ use App\Entity\Employee;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Metadata\Post;
 
-use Psr\Log\LoggerInterface; // Remove later!!!
-
 final class TasksProcessor implements ProcessorInterface
 {
     private $entityManager;
-    private LoggerInterface $logger; // Remove later!!!
 
     public function __construct(
         private ProcessorInterface $persistProcessor,
         private Security $security,
         EntityManagerInterface $entityManager,
-        LoggerInterface $logger // Remove later!!!
     )
     {
         $this->entityManager = $entityManager;
         $this->persistProcessor = $persistProcessor;
         $this->security = $security;
-        $this->logger = $logger; // Remove later!!!
     }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        $this->logger->debug('WWWWWWWW. Process ranning!!! Operation: ' . $operation->getName()); // Remove later!!!
 
         if ( $data instanceof Tasks && $operation instanceof Post ) {
-            $this->logger->debug('WWWWWWWW. IF ranning!!!'); // Remove later!!!
 
             $user = $this->security->getUser();
 

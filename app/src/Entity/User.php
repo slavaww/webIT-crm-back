@@ -51,6 +51,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
     private ?Employee $employee = null;
 
+    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    private ?Clients $client = null;
+
     /**
      * @var Collection<int, Tasks>
      */
@@ -217,6 +220,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getClient(): ?Clients
+    {
+        return $this->client;
+    }
+
+    public function setClientgetClient(Clients $client): static
+    {
+        // set the owning side of the relation if necessary
+        if ($client->getUserId() !== $this) {
+            $client->setUserId($this);
+        }
+
+        $this->client = $client;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Tasks>
      */
@@ -294,7 +314,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * Этот метод будет автоматически вызван сериализатором,
      * а его результат будет добавлен в JSON под ключом "avatar".
      */
-    #[Groups(["user:read"])] // <-- Ключевая аннотация
+    #[Groups(["user:read"])]
     public function getAvatar(): string
     {
         // 1. Если кастомный URL указан, возвращаем его.
@@ -303,7 +323,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         // 2. Иначе, генерируем URL для Gravatar.
-        $email = $this->getEmail() ?? ''; // Используем email текущего пользователя
+        // Используем email текущего пользователя
+        $email = $this->getEmail() ?? '';
         $hash = md5(strtolower(trim($email)));
         return sprintf('https://www.gravatar.com/avatar/%s?d=mp&s=200', $hash);
     }

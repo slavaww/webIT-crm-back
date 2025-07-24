@@ -9,8 +9,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-use Psr\Log\LoggerInterface; // Remove later!!!
-
 class TaskVoter extends Voter
 {
     const TASK_VIEW = 'TASK_VIEW';
@@ -18,22 +16,18 @@ class TaskVoter extends Voter
     const TASK_DELETE = 'TASK_DELETE';
     const TASK_CREATE = 'TASK_CREATE';
     private $security = null;
-    private LoggerInterface $logger; // Remove later!!!
 
     public function __construct(
         Security $security,
-        LoggerInterface $logger // Remove later!!!
     )
     {
         $this->security = $security;
-        $this->logger = $logger; // Remove later!!!
     }
     
     protected function supports(string $attribute, mixed $subject): bool
     {
-        $this->logger->debug('WWWWWWWW. TaskVoter ranning!!! Supports: ' . $attribute); // Remove later!!!
         $supportsAttribute = in_array($attribute, [self::TASK_VIEW, self::TASK_EDIT, self::TASK_DELETE, self::TASK_CREATE]);
-        $supportsSubject = $subject instanceof Tasks;
+        $supportsSubject = $subject instanceof Tasks || $attribute === self::TASK_CREATE;
 
         return $supportsAttribute && $supportsSubject;
     }
@@ -42,12 +36,10 @@ class TaskVoter extends Voter
     {
         $user = $token->getUser();
 
-        $this->logger->debug('WWWWWWWW. TaskVoter ranning!!! voteOnAttribute'); // Remove later!!!
-
         if (!$user instanceof UserInterface) {
             return false;
         }
-
+        
         $roles = $user->getRoles();
 
         // Логика для каждой операции
