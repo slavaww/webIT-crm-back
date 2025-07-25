@@ -7,25 +7,74 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Entity\User;
+use App\Entity\Tasks;
+use App\State\CommentsPersister;
+use App\Entity\TimeSpend;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['comment:read']],
+    denormalizationContext: ['groups' => ['comment:write']],
+    operations: [
+        new GetCollection(
+            uriTemplate: '/tasks/{id}/comments',
+            uriVariables: [
+                'id' => new Link(fromProperty: 'comments', fromClass: Tasks::class),
+            ],
+            normalizationContext: ['groups' => ['comment:read']],
+        ),
+        new Get(
+            security: "is_granted('COMMENT_VIEW', object)"
+        ),
+        new Post(
+            security: "is_granted('COMMENT_CREATE', object)",
+            uriTemplate: '/tasks/{id}/comments',
+            processor: CommentsPersister::class,
+            denormalizationContext: ['groups' => ['comment:write']]
+        ),
+        new Patch(
+            security: "is_granted('COMMENT_EDIT', object)"
+        ),
+        new Delete(
+            security: "is_granted('COMMENT_DELETE', object)"
+        ),
+    ],
+)]
 class Comments
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read'])]
     private ?User $author = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read', 'comment:write'])]
     private ?Tasks $task = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['comment:read'])]
+    private ?\DateTime $created_at = null;
 
     /**
      * @var Collection<int, TimeSpend>
@@ -36,6 +85,7 @@ class Comments
     public function __construct()
     {
         $this->timeSpends = new ArrayCollection();
+        $this->created_at = new \DateTime();
     }
 
     public function getId(): ?int
@@ -76,6 +126,17 @@ class Comments
     {
         $this->task = $task;
 
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTime $created_at): self
+    {
+        $this->created_at = $created_at;
         return $this;
     }
 

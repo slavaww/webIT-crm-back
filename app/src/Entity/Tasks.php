@@ -69,12 +69,12 @@ class Tasks
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['task:read', 'task:write'])]
+    #[Groups(['task:read', 'task:write', 'comment:read'])]
     private ?User $creator = null;
     
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['task:read', 'task:write'])]
+    #[Groups(['task:read', 'task:write', 'comment:read'])]
     private ?Clients $client = null;
     
     #[ORM\Column(nullable: true)]
@@ -87,12 +87,12 @@ class Tasks
     
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['task:read', 'task:write'])]
+    #[Groups(['task:read', 'task:write', 'comment:read'])]
     private ?Statuses $status = null;
     
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['task:read', 'task:write'])]
+    #[Groups(['task:read', 'task:write', 'comment:read'])]
     private ?Employee $worker = null;
 
     /**

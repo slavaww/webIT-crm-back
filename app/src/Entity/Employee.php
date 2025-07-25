@@ -48,12 +48,12 @@ class Employee
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['employee:read', 'employee:write'])]
+    #[Groups(['employee:read', 'employee:write', 'task:read'])]
     private ?string $job_title = null;
 
     #[ORM\OneToOne(inversedBy: 'employee', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['employee:read', 'employee:write'])]
+    #[Groups(['employee:read', 'employee:write', 'task:read'])]
     private ?User $user_id = null;
 
     /**

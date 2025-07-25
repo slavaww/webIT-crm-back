@@ -41,3 +41,10 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+
+    App\State\CommentsPersister:
+        arguments: 
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+        tags:
+            - { name: 'api_platform.state_processor',  _api_resource_class: App\Entity\Tasks }
+        autoconfigure: false

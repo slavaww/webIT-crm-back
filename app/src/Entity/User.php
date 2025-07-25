@@ -37,15 +37,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write', 'employee:read'])]
+    #[Groups(['user:read', 'user:write', 'employee:read', 'comment:read', 'task:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write', 'employee:read'])]
+    #[Groups(['user:read', 'user:write', 'employee:read', 'comment:read', 'task:read'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write', 'employee:read'])]
+    #[Groups(['user:read', 'user:write', 'employee:read',  'comment:read', 'task:read'])]
     private ?string $patronymic = null;
 
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]

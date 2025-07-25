@@ -34,7 +34,7 @@ class Statuses
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['status:read', 'status:write'])]
+    #[Groups(['status:read', 'status:write', 'task:read'])]
     private ?string $status = null;
 
     /**
