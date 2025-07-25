@@ -28,6 +28,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "@uiw/react-md-editor": "^4.0.8",
         "axios": "^1.10.0",
         "bootstrap": "^5.3.6",
         "i18next": "^25.3.2",
