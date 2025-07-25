@@ -48,7 +48,7 @@ class Clients
     private ?User $user_id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['client:read', 'client:write', 'task:read'])]
+    #[Groups(['client:read', 'client:write', 'task:read', 'comment:read'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]

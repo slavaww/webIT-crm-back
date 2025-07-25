@@ -49,9 +49,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $patronymic = null;
 
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    #[Groups(['comment:read'])]
     private ?Employee $employee = null;
 
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    #[Groups(['comment:read'])]
     private ?Clients $client = null;
 
     /**
