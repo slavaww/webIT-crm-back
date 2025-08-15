@@ -37,6 +37,13 @@ services:
             - { name: 'api_platform.state_processor',  _api_resource_class: App\Entity\Tasks }
         autoconfigure: false
 
+    App\State\TimeSpendProcessor:
+        arguments:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+        tags:
+            - { name: 'api_platform.state_processor',  _api_resource_class: App\Entity\TimeSpend }
+        autoconfigure: false
+
     App\State\TasksCollectionProvider:
         autowire: true
         autoconfigure: true
