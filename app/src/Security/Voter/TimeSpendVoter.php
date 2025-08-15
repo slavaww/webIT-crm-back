@@ -46,7 +46,7 @@ class TimeSpendVoter extends Voter
         switch ($attribute) {
             case self::TIME_SPEND_CREATE:
                 // Создать время может только работник или Админ
-                return in_array(['ROLE_USER', 'ROLE_ADMIN'], $roles);
+                return in_array('ROLE_SUPER_ADMIN', $roles) || in_array('ROLE_ADMIN', $roles);
             case self::TIME_SPEND_VIEW:
                 // Смотреть время может любой залогиненный, но только свое
                 if (in_array('ROLE_SUPER_ADMIN', $roles)) {
