@@ -16,6 +16,15 @@ class TimeSetsRepository extends ServiceEntityRepository
         parent::__construct($registry, TimeSets::class);
     }
 
+    public function getMonthlySum(): array
+    {
+        return $this->createQueryBuilder('ts')
+            ->select('YEAR(ts.date) AS year, MONTH(ts.date) AS month, ts.client as client, SUM(ts.time_spend) AS totalSum')
+            ->groupBy('year, month, ts.client')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return TimeSets[] Returns an array of TimeSets objects
     //     */

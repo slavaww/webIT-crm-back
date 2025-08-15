@@ -14,9 +14,6 @@ class TimeSets
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $mons_year = null;
-
     #[ORM\Column]
     private ?int $time_set = null;
 
@@ -27,21 +24,15 @@ class TimeSets
     #[ORM\Column(nullable: true)]
     private ?int $time_spend = null;
 
+    #[ORM\Column]
+    private ?int $year = null;
+
+    #[ORM\Column]
+    private ?int $month = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getMonsYear(): ?\DateTime
-    {
-        return $this->mons_year;
-    }
-
-    public function setMonsYear(\DateTime $mons_year): static
-    {
-        $this->mons_year = $mons_year;
-
-        return $this;
     }
 
     public function getTimeSet(): ?int
@@ -76,6 +67,30 @@ class TimeSets
     public function setTimeSpend(?int $time_spend): static
     {
         $this->time_spend = $time_spend;
+
+        return $this;
+    }
+
+    public function getYear(): ?int
+    {
+        return $this->year;
+    }
+
+    public function setYear(int $year): static
+    {
+        $this->year = $year;
+
+        return $this;
+    }
+
+    public function getMonth(): ?int
+    {
+        return $this->month;
+    }
+
+    public function setMonth(int $month): static
+    {
+        $this->month = $month;
 
         return $this;
     }

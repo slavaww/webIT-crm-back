@@ -16,6 +16,14 @@ class TimeSpendRepository extends ServiceEntityRepository
         parent::__construct($registry, TimeSpend::class);
     }
 
+    public function getMonthlyClientSum(): array
+    {
+        return $this->createQueryBuilder('ts')
+        ->select('SUBSTRING(ts.date, 1, 4) AS year, SUBSTRING(ts.date, 6, 2) AS month, IDENTITY(ts.client) AS client_id, SUM(ts.time_spend) AS totalSum')
+        ->groupBy('year, month, ts.client')
+        ->getQuery()
+        ->getResult();
+    }
     //    /**
     //     * @return TimeSpend[] Returns an array of TimeSpend objects
     //     */
