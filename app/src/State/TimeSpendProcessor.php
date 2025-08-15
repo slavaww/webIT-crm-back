@@ -10,8 +10,6 @@ use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Tasks;
 
-use Psr\Log\LoggerInterface;
-
 final class TimeSpendProcessor implements ProcessorInterface
 {
 
@@ -21,14 +19,12 @@ final class TimeSpendProcessor implements ProcessorInterface
         private EntityManagerInterface $entityManager,
         private TimeSpend $timeSpend,
         private Tasks $task,
-        private LoggerInterface $logger
     )
     {
         $this->persistProcessor = $persistProcessor;
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->task = $task;
-        $this->logger = $logger;
     }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
@@ -41,11 +37,8 @@ final class TimeSpendProcessor implements ProcessorInterface
             if (in_array('ROLE_SUPER_ADMIN', $roles) || in_array('ROLE_ADMIN', $roles)) {
                 $id_task = $data->getTask()->getId();
                 $task_obj = $this->entityManager->getRepository(Tasks::class)->findOneBy(['id' => $id_task]);
-
                 $client = $task_obj->getClient();
                 $worker = $task_obj->getWorker();
-
-                // $this->logger->info('WWWWWWWWWWW.', (array) $worker->getUserId());
 
                 if (in_array('ROLE_ADMIN', $roles) && $worker->getUserId() != $user) {
                     throw new \InvalidArgumentException('Пользователь может добавить время только в свою задачу.');
