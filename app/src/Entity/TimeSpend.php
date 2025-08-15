@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\State\TimeSpendCurrentMonthProvider;
+use App\State\TimeSpendProcessor;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['timeSpend:read']],
@@ -28,6 +29,7 @@ use App\State\TimeSpendCurrentMonthProvider;
         new Post(
             security: "is_granted('TIME_SPEND_CREATE')",
             denormalizationContext: ['groups' => ['timeSpend:write']],
+            processor: TimeSpendProcessor::class,
         ),
         new Patch(
             security: "is_granted('TIME_SPEND_EDIT', object)"
