@@ -14,12 +14,11 @@ use ApiPlatform\Metadata\Post;
 
 final class TasksProcessor implements ProcessorInterface
 {
-    private $entityManager;
-
+    
     public function __construct(
         private ProcessorInterface $persistProcessor,
         private Security $security,
-        EntityManagerInterface $entityManager,
+        private EntityManagerInterface $entityManager,
     )
     {
         $this->entityManager = $entityManager;
