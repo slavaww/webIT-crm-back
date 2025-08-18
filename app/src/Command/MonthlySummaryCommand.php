@@ -1,4 +1,11 @@
 <?php
+/**
+ * CLI command for counting time spends by client and month
+ * 
+ * For run use command:
+ * CRON
+ * 0 1 1 * * /usr/bin/php /path/to/project/bin/console app:aggregate-monthly-data
+ */
 
 namespace App\Command;
 
