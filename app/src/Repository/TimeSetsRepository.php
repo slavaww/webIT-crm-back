@@ -19,8 +19,17 @@ class TimeSetsRepository extends ServiceEntityRepository
     public function getMonthlySum(): array
     {
         return $this->createQueryBuilder('ts')
-            ->select('YEAR(ts.date) AS year, MONTH(ts.date) AS month, ts.client as client, SUM(ts.time_spend) AS totalSum')
+            ->select('YEAR(ts.date) AS year, MONTH(ts.date) AS month, ts.client as client, SUM(ts.timeSpend) AS totalSum')
             ->groupBy('year, month, ts.client')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findTimeSetsWithTimeSpend(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->select('IDENTITY(t.client) AS client', 't.year', 't.month', 't.time_set', 't.timeSpend')
+            ->where('t.timeSpend IS NOT NULL')
             ->getQuery()
             ->getResult();
     }

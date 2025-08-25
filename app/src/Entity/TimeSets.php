@@ -55,7 +55,7 @@ class TimeSets
     private ?Clients $client = null;
     
     #[ORM\Column(nullable: true)]
-    private ?int $time_spend = null;
+    private ?int $timeSpend = null;
     
     #[ORM\Column]
     #[Groups(['timeSet:write'])]
@@ -64,6 +64,9 @@ class TimeSets
     #[ORM\Column]
     #[Groups(['timeSet:write'])]
     private ?int $month = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $UnspentTime = null;
 
     public function getId(): ?int
     {
@@ -96,12 +99,12 @@ class TimeSets
 
     public function getTimeSpend(): ?int
     {
-        return $this->time_spend;
+        return $this->timeSpend;
     }
 
-    public function setTimeSpend(?int $time_spend): static
+    public function setTimeSpend(?int $timeSpend): static
     {
-        $this->time_spend = $time_spend;
+        $this->timeSpend = $timeSpend;
 
         return $this;
     }
@@ -126,6 +129,18 @@ class TimeSets
     public function setMonth(int $month): static
     {
         $this->month = $month;
+
+        return $this;
+    }
+
+    public function getUnspentTime(): ?int
+    {
+        return $this->UnspentTime;
+    }
+
+    public function setUnspentTime(?int $UnspentTime): static
+    {
+        $this->UnspentTime = $UnspentTime;
 
         return $this;
     }
