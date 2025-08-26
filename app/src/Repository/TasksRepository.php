@@ -16,20 +16,32 @@ class TasksRepository extends ServiceEntityRepository
         parent::__construct($registry, Tasks::class);
     }
 
-    //    /**
-    //     * @return Tasks[] Returns an array of Tasks objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+       /**
+        * @return int Task Client ID or Null
+        */
+       public function findByIdClient($id): ?int
+       {
+            $result = $this->createQueryBuilder('t')
+               ->select('IDENTITY(t.client) AS client')
+               ->andWhere('t.id = :id')
+               ->setParameter('id', $id)
+               ->orderBy('t.id', 'ASC')
+               ->getQuery()
+               ->getOneOrNullResult();
+            return $result ? (int) $result['client'] : null;
+       }
+
+       public function findByIdWorker($id): ?int
+       {
+            $result = $this->createQueryBuilder('t')
+               ->select('IDENTITY(t.worker) AS worker')
+               ->andWhere('t.id = :id')
+               ->setParameter('id', $id)
+               ->orderBy('t.id', 'ASC')
+               ->getQuery()
+               ->getOneOrNullResult();
+            return $result ? (int) $result['worker'] : null;
+       }
 
     //    public function findOneBySomeField($value): ?Tasks
     //    {

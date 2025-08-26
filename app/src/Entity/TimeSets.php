@@ -66,7 +66,7 @@ class TimeSets
     private ?int $month = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $UnspentTime = null;
+    private ?int $unspentTime = null;
 
     public function getId(): ?int
     {
@@ -135,12 +135,12 @@ class TimeSets
 
     public function getUnspentTime(): ?int
     {
-        return $this->UnspentTime;
+        return $this->unspentTime;
     }
 
-    public function setUnspentTime(?int $UnspentTime): static
+    public function setUnspentTime(?int $unspentTime): static
     {
-        $this->UnspentTime = $UnspentTime;
+        $this->unspentTime = $unspentTime;
 
         return $this;
     }

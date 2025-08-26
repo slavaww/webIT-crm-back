@@ -20,6 +20,7 @@ use App\Entity\Tasks;
 use App\State\CommentsPersister;
 use App\Entity\TimeSpend;
 use ApiPlatform\Metadata\Link;
+use App\State\CommentsCollectionProvider;
 
 #[ORM\Entity(repositoryClass: CommentsRepository::class)]
 #[ApiResource(
@@ -32,6 +33,7 @@ use ApiPlatform\Metadata\Link;
                 'id' => new Link(fromProperty: 'comments', fromClass: Tasks::class),
             ],
             normalizationContext: ['groups' => ['comment:read']],
+            provider: CommentsCollectionProvider::class,
         ),
         new Get(
             security: "is_granted('COMMENT_VIEW', object)"
