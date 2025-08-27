@@ -10,32 +10,41 @@ use App\Repository\CommentsRepository;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use App\Repository\TasksRepository;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 final class CommentsCollectionProvider implements ProviderInterface
 {
     private $repository;
     private $security;
     private $tasks;
+    private $logger;
+
 
     public function __construct(
             CommentsRepository $repository,
             Security $security,
             TasksRepository $tasks,
+            LoggerInterface $logger
         )
     {
         $this->repository = $repository;
         $this->security = $security;
         $this->tasks = $tasks;
+        $this->logger = $logger;
     }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
+        $this->logger->info('RRRRRRRRR 1');
         if ($operation instanceof GetCollection || $operation instanceof Get) {
-
+            $this->logger->info('RRRRRRRRR 2');
+            
             $user = $this->security->getUser();
             $roles = $user->getRoles();
             
             if (in_array('ROLE_SUPER_ADMIN', $roles)) {
+                $this->logger->info('RRRRRRRRR 3');
                 // Супер-админ видит все
                 return $this->repository->findAll();
             } elseif (in_array('ROLE_ADMIN', $roles)) {
@@ -65,6 +74,7 @@ final class CommentsCollectionProvider implements ProviderInterface
                 }
             }
         }
+        $this->logger->info('RRRRRRRRR 4');
 
         return []; // Нет доступа — пустой список
     }
