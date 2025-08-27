@@ -8,6 +8,7 @@ use App\Entity\Comments;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Repository\CommentsRepository;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
 use App\Repository\TasksRepository;
 
 final class CommentsCollectionProvider implements ProviderInterface
@@ -29,7 +30,7 @@ final class CommentsCollectionProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        if ($operation instanceof GetCollection) {
+        if ($operation instanceof GetCollection || $operation instanceof Get) {
 
             $user = $this->security->getUser();
             $roles = $user->getRoles();

@@ -36,7 +36,10 @@ use App\State\CommentsCollectionProvider;
             provider: CommentsCollectionProvider::class,
         ),
         new Get(
-            security: "is_granted('COMMENT_VIEW', object)"
+            security: "is_granted('COMMENT_VIEW', object)",
+            normalizationContext: ['groups' => ['comment:read']],
+            // uriTemplate: '/comments/{commentId}',
+            // provider: CommentsCollectionProvider::class,
         ),
         new Post(
             security: "is_granted('COMMENT_CREATE', object)",
@@ -45,10 +48,12 @@ use App\State\CommentsCollectionProvider;
             denormalizationContext: ['groups' => ['comment:write']]
         ),
         new Patch(
-            security: "is_granted('COMMENT_EDIT', object)"
+            security: "is_granted('COMMENT_EDIT', object) and (is_granted('ROLE_SUPER_ADMIN') or (is_granted('ROLE_USER') or is_granted('ROLE_ADMIN')) and object.getAuthor() == user)",
+            securityMessage: "Редактировать комментарий может только его автор или SUPER_ADMIN"
         ),
         new Delete(
-            security: "is_granted('COMMENT_DELETE', object)"
+            security: "is_granted('ROLE_SUPER_ADMIN') or (is_granted('ROLE_USER') or is_granted('ROLE_ADMIN')) and object.getAuthor() == user",
+            securityMessage: "Удалять комментарий может только его автор или SUPER_ADMIN"
         ),
     ],
 )]
