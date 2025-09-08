@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\State\ClientsCollectionProvider;
 
 #[ORM\Entity(repositoryClass: ClientsRepository::class)]
 #[ApiResource(
@@ -22,7 +23,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new GetCollection(
             normalizationContext: ['groups' => ['client:read']],
-            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER')"
+            provider: ClientsCollectionProvider::class,
+            // security: "is_granted('CLIENT_VIEW', object)"
         ),
         // Разрешаем обновлять (PATCH) свой профиль
         new Patch(
@@ -88,6 +90,18 @@ class Clients
      */
     #[ORM\OneToMany(targetEntity: TimeSpend::class, mappedBy: 'client')]
     private Collection $timeSpends;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
+    private ?bool $isPaid = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
+    private ?int $dayOfPaiment = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['client:read', 'client:write'])]
+    private ?int $monthOfPaiment = null;
 
     public function __construct()
     {
@@ -271,6 +285,47 @@ class Clients
                 $timeSpend->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isPaid(): ?bool
+    {
+        return $this->isPaid;
+    }
+
+    public function getIsPaid(): ?bool
+    {
+        return $this->isPaid;
+    }
+
+    public function setIsPaid(?bool $isPaid): static
+    {
+        $this->isPaid = $isPaid;
+
+        return $this;
+    }
+
+    public function getDayOfPaiment(): ?int
+    {
+        return $this->dayOfPaiment;
+    }
+
+    public function setDayOfPaiment(?int $dayOfPaiment): static
+    {
+        $this->dayOfPaiment = $dayOfPaiment;
+
+        return $this;
+    }
+
+    public function getMonthOfPaiment(): ?int
+    {
+        return $this->monthOfPaiment;
+    }
+
+    public function setMonthOfPaiment(?int $monthOfPaiment): static
+    {
+        $this->monthOfPaiment = $monthOfPaiment;
 
         return $this;
     }

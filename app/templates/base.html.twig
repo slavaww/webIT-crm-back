@@ -9,9 +9,9 @@
         {% endblock %}
     </head>
     <body class="{% block body_class %}main-page{% endblock %}">
-        <div class="container">
+
         {% block body %}{% endblock %}
-        </div>
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             {# {% block importmap %}{{ importmap('app') }}{% endblock %} #}

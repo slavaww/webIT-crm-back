@@ -23,13 +23,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_USER')",
             normalizationContext: ['groups' => ['employee:read']]
         ),
+        new Get(
+            security: "is_granted('EMPLOYEE_VIEW', object)",
+            normalizationContext: ['groups' => ['employee:read']]
+        ),
         new Patch(
             denormalizationContext: ['groups' => ['employee:write']],
             // Защищаем эндпоинт с помощью Voter'а
             security: "is_granted('EMPLOYEE_EDIT', object)"
-        ),
-        new Get(
-            security: "is_granted('EMPLOYEE_VIEW', object)"
         ),
         new Post(
             security: "is_granted('EMPLOYEE_CREATE', object)"
