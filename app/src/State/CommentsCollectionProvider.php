@@ -37,7 +37,11 @@ final class CommentsCollectionProvider implements ProviderInterface
             
             if (in_array('ROLE_SUPER_ADMIN', $roles)) {
                 // Супер-админ видит все
-                return $this->repository->findAll();
+                return $this->repository->createQueryBuilder('t')
+                            ->where('t.task = :task')
+                            ->setParameter('task', $uriVariables['id'])
+                            ->getQuery()
+                            ->getResult();
             } elseif (in_array('ROLE_ADMIN', $roles)) {
                 // Сотрудник видит только свои записи
                 $worker = $user->getEmployee();
@@ -47,7 +51,11 @@ final class CommentsCollectionProvider implements ProviderInterface
                     $worker_id = (int) $worker->getId();
 
                     if (!empty($task_worker_id) && $worker_id === $task_worker_id) {
-                        return $this->repository->findAll();
+                        return $this->repository->createQueryBuilder('t')
+                            ->where('t.task = :task')
+                            ->setParameter('task', $uriVariables['id'])
+                            ->getQuery()
+                            ->getResult();
                     }
                 }
 
