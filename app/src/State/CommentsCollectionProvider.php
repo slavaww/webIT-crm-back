@@ -60,7 +60,12 @@ final class CommentsCollectionProvider implements ProviderInterface
                     $client_id = (int) $client->getId();
 
                     if (!empty($task_client_id) && $client_id === $task_client_id) {
-                        return $this->repository->findAll();
+
+                        return $this->repository->createQueryBuilder('t')
+                            ->where('t.task = :task')
+                            ->setParameter('task', $uriVariables['id'])
+                            ->getQuery()
+                            ->getResult();
                     }
                 }
             }
