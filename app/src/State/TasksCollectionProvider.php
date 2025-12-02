@@ -36,34 +36,37 @@ final class TasksCollectionProvider implements ProviderInterface
         $client = $filters['client'] ?? null;
 
         if (in_array('ROLE_SUPER_ADMIN', $roles)) {
-            // Супер-админ видит все
-            return $this->repository->findAll();
+            // Супер-админ видит все, отсортированные по дате создания
+            if (empty($statuses) && empty($create_start) && empty($create_end)) {
+                // Если нет GET-параметров, то простой вывод задач
+                return $this->repository->findBy([], ['create_date' => 'DESC']);
+            }
+
+            $qb = $this->repository->createQueryBuilder('t')
+                    ->orderBy('t.create_date', 'DESC'); // Сортировка по дате создания
+
         } elseif (in_array('ROLE_ADMIN', $roles)) {
-            // Сотрудник видит только свои задачи (где worker === user)
-            return $this->repository->findBy(['worker' => $user->getEmployee()]);
+            // Сотрудник видит только свои задачи (где worker === user), отсортированные
+            if (empty($statuses) && empty($create_start) && empty($create_end)) {
+                # Simle returm without GET-query
+                return $this->repository->findBy(
+                    ['worker' => $user->getEmployee()],
+                    ['create_date' => 'DESC']
+                );
+            }
+
+            $qb = $this->repository->createQueryBuilder('t')
+                    ->orderBy('t.create_date', 'DESC') // Сортировка по дате создания
+                    ->where('t.worker = :worker')
+                    ->setParameter('worker', $user->getEmployee());
+
         } elseif (in_array('ROLE_USER', $roles)) {
             // Клиент видит только свои задачи (где client === user)
             // return $this->repository->findBy(['client' => $user->getClient()]);
             $qb = $this->repository->createQueryBuilder('t')
+                    ->orderBy('t.create_date', 'DESC') // Сортировка по дате создания
                     ->where('t.client = :client')
                     ->setParameter('client', $user->getClient());
-
-            if (!empty($statuses)) {
-                $qb->andWhere('t.status IN (:statuses)')
-                ->setParameter('statuses', $statuses);
-            }
-
-            if (!empty($create_start) && !empty($create_end)) {
-                $qb->andWhere('t.create_date BETWEEN :create_start AND :create_end');
-                $qb->setParameter('create_start', $create_start);
-                $qb->setParameter('create_end', $create_end);
-            } elseif (!empty($create_start)) {
-                $qb->andWhere('t.create_date >= :create_start');
-                $qb->setParameter('create_start', $create_start);
-            } elseif (!empty($create_end)) {
-                $qb->andWhere('t.create_date <= :create_end');
-                $qb->setParameter('create_end', $create_end);
-            }
 
             if (!empty($worker)) {
                 if ($worker == 1) {
@@ -74,10 +77,30 @@ final class TasksCollectionProvider implements ProviderInterface
                     $qb->andWhere('t.worker IS NULL');
                 }
             }
-
-            return $qb->getQuery()->getResult();
         }
 
-        return []; // Нет доступа — пустой список
+        /**
+         * Выводим данные с GET-параметрами
+         */
+        if (!empty($statuses)) {
+            $qb->andWhere('t.status IN (:statuses)')
+            ->setParameter('statuses', $statuses);
+        }
+
+        if (!empty($create_start) && !empty($create_end)) {
+            $qb->andWhere('t.create_date BETWEEN :create_start AND :create_end');
+            $qb->setParameter('create_start', $create_start);
+            $qb->setParameter('create_end', $create_end);
+        } elseif (!empty($create_start)) {
+            $qb->andWhere('t.create_date >= :create_start');
+            $qb->setParameter('create_start', $create_start);
+        } elseif (!empty($create_end)) {
+            $qb->andWhere('t.create_date <= :create_end');
+            $qb->setParameter('create_end', $create_end);
+        }
+
+        return $qb->getQuery()->getResult();
+
+        // return []; // Нет доступа — пустой список
     }
 }
