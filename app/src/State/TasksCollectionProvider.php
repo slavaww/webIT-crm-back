@@ -37,13 +37,19 @@ final class TasksCollectionProvider implements ProviderInterface
 
         if (in_array('ROLE_SUPER_ADMIN', $roles)) {
             // Супер-админ видит все, отсортированные по дате создания
-            if (empty($statuses) && empty($create_start) && empty($create_end)) {
+            if (empty($statuses) && empty($create_start) && empty($create_end) && empty($worker)) {
                 // Если нет GET-параметров, то простой вывод задач
                 return $this->repository->findBy([], ['create_date' => 'DESC']);
             }
 
             $qb = $this->repository->createQueryBuilder('t')
                     ->orderBy('t.create_date', 'DESC'); // Сортировка по дате создания
+
+            if (!empty($worker)) {
+                // $qb->andWhere('t.worker IS NOT NULL');
+                $qb->andWhere('t.worker = :worker');
+                $qb->setParameter('worker', $worker);
+            }
 
         } elseif (in_array('ROLE_ADMIN', $roles)) {
             // Сотрудник видит только свои задачи (где worker === user), отсортированные
