@@ -9,6 +9,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Tasks;
+use App\Entity\Comments;
 
 final class TimeSpendProcessor implements ProcessorInterface
 {
@@ -19,12 +20,14 @@ final class TimeSpendProcessor implements ProcessorInterface
         private EntityManagerInterface $entityManager,
         private TimeSpend $timeSpend,
         private Tasks $task,
+        private Comments $comments
     )
     {
         $this->persistProcessor = $persistProcessor;
         $this->security = $security;
         $this->entityManager = $entityManager;
         $this->task = $task;
+        $this->comments = $comments;
     }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
@@ -39,9 +42,23 @@ final class TimeSpendProcessor implements ProcessorInterface
                 $task_obj = $this->entityManager->getRepository(Tasks::class)->findOneBy(['id' => $id_task]);
                 $client = $task_obj->getClient();
                 $worker = $task_obj->getWorker();
+                $comments = $task_obj->getComments();
+                
+                if ( empty($data->getComment()) ) {
+                    throw new \InvalidArgumentException('Comment ID didn\'t set');
+                }
+                
+                $comment_id = $data->getComment()->getId();
+                $is_comment_in_task = false;
+                foreach ($comments as $comment) {
+                    if ( $comment->getId() === $comment_id ) $is_comment_in_task = true;
+                }
+                if (!$is_comment_in_task) {
+                    throw new \InvalidArgumentException('Comment ID does not belong to this task.');
+                }
 
                 if (in_array('ROLE_ADMIN', $roles) && $worker->getUserId() != $user) {
-                    throw new \InvalidArgumentException('Пользователь может добавить время только в свою задачу.');
+                    throw new \InvalidArgumentException('Исполнитель может добавить время только в свою задачу.');
                 }
     
                 $data->setClient($client);

@@ -45,33 +45,28 @@ final class TimeSpendCurrentMonthProvider implements ProviderInterface
         }
 
         // Супер-админ видит все
+        $qb = $this->repo->createQueryBuilder('t')
+                ->where('t.date BETWEEN :start AND :end')
+                ->setParameter('start', $start)
+                ->setParameter('end', $end);
+
         // Сотрудник видит только свои записи
         if (in_array('ROLE_ADMIN', $roles)) {
-            return $this->repo->createQueryBuilder('t')
-                    ->where('t.date BETWEEN :start AND :end AND t.worker = :worker')
-                    ->setParameter('start', $start)
-                    ->setParameter('end', $end)
-                    ->setParameter('worker', $user->getEmployee())
-                    ->getQuery()
-                    ->getResult();
+            $qb->andWhere('t.worker = :worker')
+                ->setParameter('worker', $user->getEmployee());
         }
         // Клиент видит только свои записи
         if (in_array('ROLE_USER', $roles)) {
-            return $this->repo->createQueryBuilder('t')
-                ->where('t.date BETWEEN :start AND :end AND t.client = :client')
-                ->setParameter('start', $start)
-                ->setParameter('end', $end)
-                ->setParameter('client', $user->getClient())
-                ->getQuery()
-                ->getResult();
+            $qb->andWhere('t.client = :client')
+                ->setParameter('client', $user->getClient());
+        }
+
+        if (!empty($filters['task'])) {
+            $qb->andWhere('t.task = :task')
+                ->setParameter('task', $filters['task']);
         }
 
         // Запрос с фильтрацией по date
-        return $this->repo->createQueryBuilder('t')
-            ->where('t.date BETWEEN :start AND :end')
-            ->setParameter('start', $start)
-            ->setParameter('end', $end)
-            ->getQuery()
-            ->getResult();
+        return $qb->getQuery()->getResult();
     }
 }
