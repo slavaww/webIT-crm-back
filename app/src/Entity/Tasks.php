@@ -21,6 +21,7 @@ use App\Entity\Employee;
 use App\Entity\Comments;
 use App\Entity\TimeSpend;
 use App\State\TasksCollectionProvider;
+use \App\State\TasksProcessor;
 
 #[ORM\Entity(repositoryClass: TasksRepository::class)]
 #[ApiResource(
@@ -36,10 +37,11 @@ use App\State\TasksCollectionProvider;
             normalizationContext: ['groups' => ['task:read']]
         ),
         new Post(
-            processor: \App\State\TasksProcessor::class,
+            processor: TasksProcessor::class,
             security: "is_granted('TASK_CREATE')",
         ),
         new Patch(
+            processor: TasksProcessor::class,
             security: "is_granted('TASK_EDIT', object)"
         ),
         new Delete(
