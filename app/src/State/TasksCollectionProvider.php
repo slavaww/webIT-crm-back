@@ -31,15 +31,16 @@ final class TasksCollectionProvider implements ProviderInterface
             $statuses = explode(',', $statuses);
         }
         $create_start = $filters['create_start'] ?? null;
+        $in_progress = $filters['inProgress'] ?? null;
         $create_end = $filters['create_end'] ?? null;
         $worker = $filters['worker'] ?? null;
         $client = $filters['client'] ?? null;
 
         if (in_array('ROLE_SUPER_ADMIN', $roles)) {
             // Супер-админ видит все, отсортированные по дате создания
-            if ( empty($statuses) && empty($create_start) && empty($create_end) && empty($worker) && empty($client) ) {
+            if ( empty($statuses) && empty($create_start) && empty($create_end) && empty($worker) && empty($client) && empty($in_progress) ) {
                 // Если нет GET-параметров, то простой вывод задач
-                return $this->repository->findBy([], ['create_date' => 'DESC']);
+                return $this->repository->findBy(['end_time' => null], ['create_date' => 'DESC']);
             }
 
             $qb = $this->repository->createQueryBuilder('t')
@@ -57,10 +58,10 @@ final class TasksCollectionProvider implements ProviderInterface
             
         } elseif (in_array('ROLE_ADMIN', $roles)) {
             // Сотрудник видит только свои задачи (где worker === user), отсортированные
-            if ( empty($statuses) && empty($create_start) && empty($create_end) && empty($client) ) {
+            if ( empty($statuses) && empty($create_start) && empty($create_end) && empty($client) && empty($in_progress)) {
                 # Simle returm without GET-query
                 return $this->repository->findBy(
-                    ['worker' => $user->getEmployee()],
+                    ['worker' => $user->getEmployee(), 'end_time' => null],
                     ['create_date' => 'DESC']
                 );
             }
@@ -100,6 +101,20 @@ final class TasksCollectionProvider implements ProviderInterface
         if (!empty($statuses)) {
             $qb->andWhere('t.status IN (:statuses)')
             ->setParameter('statuses', $statuses);
+        }
+
+        /**
+         * Выводим только действующие задачи, если не задан
+         * GET-параметр "all"
+         */
+        if (!empty($in_progress) && ($in_progress == 1 || $in_progress == 'all')) {
+            if ($in_progress == 1) {
+                $qb->andWhere('t.end_time IS NOT NULL');
+            }
+        } else {    
+            # Иначе всегда выводим ТОЛЬКО те задачи,
+            # которые еще не закрыты
+            $qb->andWhere('t.end_time IS NULL');
         }
 
         if (!empty($create_start) && !empty($create_end)) {
