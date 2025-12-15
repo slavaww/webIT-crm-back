@@ -39,10 +39,28 @@ final class TasksProcessor implements ProcessorInterface
             throw new \InvalidArgumentException('Пользователь не аутентифицирован.');
         }
         $roles = $user->getRoles();
+        $now = new \DateTime('now', new \DateTimeZone('Europe/Moscow'));
 
         if ( $data instanceof Tasks && $operation instanceof Post ) {
             // Register current user as creator of the task
             $data->setCreator($user);
+
+            $defaultStatus = $this->entityManager->getRepository(Statuses::class)->findOneBy(['id' => 1]);
+            $status = $data->getStatus() ?? null;
+
+            // если статус не указан в запросе
+            if (!$status) {
+                if ($defaultStatus) {
+                    $data->setStatus($defaultStatus);
+                } else {
+                    throw new \InvalidArgumentException('Статус по умолчанию не найден.');
+                }
+            }
+
+            if ($status && $status->getId() >= 2) {
+                # Set start time if status more than created
+                $data->setStartTime($now);
+            }
 
             // Установка client (только для ROLE_USER)
             // Для ROLE_ADMIN и ROLE_SUPER_ADMIN client приходит из формы
@@ -50,22 +68,13 @@ final class TasksProcessor implements ProcessorInterface
                 $client = $this->entityManager->getRepository(Clients::class)->findOneBy(['user_id' => $user]);
                 if ($client) {
                     $data->setClient($client);
+                    $data->setStatus($defaultStatus);
+                    $data->setWorker(null);
                 } else {
                     throw new \InvalidArgumentException('Клиент не найден для текущего пользователя.');
                 }
             }
 
-            // Установка status по умолчанию (наименьший ID, "Создана")
-            // если статус не указан в запросе
-            if (!$data->getStatus()) {
-                $defaultStatus = $this->entityManager->getRepository(Statuses::class)->findOneBy([], ['id' => 'ASC']);
-                if ($defaultStatus) {
-                    $data->setStatus($defaultStatus);
-                } else {
-                    throw new \InvalidArgumentException('Статус по умолчанию не найден.');
-                }
-            }
-            
             // Установка worker (только для сотрудников)
             // Для ROLE_USER: null; для ROLE_SUPER_ADMIN: из формы
             if (in_array('ROLE_ADMIN', $roles)) {
@@ -149,14 +158,12 @@ final class TasksProcessor implements ProcessorInterface
                 && empty($data->getStartTime())
                 ) {
                 # Set current time to start_time field if status >= 2
-                $now = new \DateTime();
                 $data->setStartTime($now);
             }
 
             if (isset($patch_data['endTime'])) {
                 if ($patch_data['endTime'] == 1 && empty($data->getEndTime()) ) {
                     # Close current task by setting curent date
-                    $now = new \DateTime();
                     $data->setEndTime($now);
                 }
                 if ($patch_data['endTime'] == 2) {
