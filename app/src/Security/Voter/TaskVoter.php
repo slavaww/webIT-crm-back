@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Entity\TimeSpend;
 
 class TaskVoter extends Voter
 {
@@ -68,8 +69,33 @@ class TaskVoter extends Voter
 
                 return false;
             case self::TASK_DELETE:
-                // Удалять может только супер-админ
-                return in_array('ROLE_SUPER_ADMIN', $roles);
+                /** @var Tasks $task */
+                $task = $subject;
+
+                $can_delete = false;
+
+                // Удалять может супер-админ
+                if (in_array('ROLE_SUPER_ADMIN', $roles)) {
+                    $can_delete = true;
+                }
+
+                // Удалять может сздатель при условии, что
+                // задача не имеет комментариев, статус задачи не более 1
+                // у задачи нет time_spend
+                if ( $task->getCreator() === $user ) {
+                    // Проверяем, имеет ли задача комментарии
+                    if (count($task->getComments()) === 0) {
+                        // Проверяем, статус задачи не более 1
+                        if ( $task->getStatus()?->getId() <= 1 ) {
+                            // Проверяем, что ID этой задачи нет в time_spend
+                            if (count($task->getTimeSpends()) === 0) {
+                                $can_delete = true;
+                            }
+                        }
+                    }
+                }
+
+                return $can_delete;
         }
 
         return false;
