@@ -40,20 +40,22 @@ class CommentVoter extends Voter
 
         $roles = $user->getRoles();
 
+        /** @var Comments $comment */
+        $comment = $subject;
+
         switch ($attribute) {
             case self::COMMENT_CREATE:
                 return in_array('ROLE_USER', $roles) || in_array('ROLE_ADMIN', $roles) || in_array('ROLE_SUPER_ADMIN', $roles);
             case self::COMMENT_VIEW:
             case self::COMMENT_EDIT:
-                /** @var Comments $comment */
-                $comment = $subject;
 
+                /** @var Tasks $task */
+                $task = $comment->getTask();
                 if (in_array('ROLE_SUPER_ADMIN', $roles)) {
                     return true;
                 }
 
                 // Пользователь может видеть/редактировать комментарии к своим задачам (через связь task)
-                $task = $comment->getTask();
                 if ($task) {
                     if (in_array('ROLE_ADMIN', $roles)) {
                         return $task->getWorker()?->getUserId() === $user;
@@ -65,7 +67,19 @@ class CommentVoter extends Voter
 
                 return false;
             case self::COMMENT_DELETE:
-                return in_array('ROLE_SUPER_ADMIN', $roles);
+                // Comments with time spent cannot be deleted (include super admin)
+                if (!$comment->getTimeSpends()->isEmpty()) {
+                    return false;
+                }
+                
+                // ROLE_SUPER_ADMIN can delete any comment
+                if ($this->security->isGranted('ROLE_SUPER_ADMIN')) {
+                    return true;
+                }
+                
+                // ROLE_ADMIN and ROLE_USER can delete their own comments
+                // Assuming $comment->getAuthor() returns the user who created the comment.
+                return $comment->getAuthor() === $user;
         }
 
         return false;

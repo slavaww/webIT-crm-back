@@ -50,8 +50,8 @@ use App\State\CommentsCollectionProvider;
             securityMessage: "Редактировать комментарий может только его автор или SUPER_ADMIN"
         ),
         new Delete(
-            security: "is_granted('ROLE_SUPER_ADMIN') or (is_granted('ROLE_USER') or is_granted('ROLE_ADMIN')) and object.getAuthor() == user",
-            securityMessage: "Удалять комментарий может только его автор или SUPER_ADMIN"
+            security: "is_granted('COMMENT_DELETE', object) and object.getAuthor() == user",
+            securityMessage: "Удалять комментарий может только его автор или SUPER_ADMIN и только без отметок времени"
         ),
     ],
 )]
