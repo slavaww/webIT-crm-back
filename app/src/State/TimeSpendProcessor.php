@@ -38,13 +38,24 @@ final class TimeSpendProcessor implements ProcessorInterface
             $roles = $user->getRoles();
 
             if (in_array('ROLE_SUPER_ADMIN', $roles) || in_array('ROLE_ADMIN', $roles)) {
-                if ( empty($data->getComment()) ) {
+                $data_comment = $data->getComment();
+                if ( empty($data_comment) ) {
                     throw new \InvalidArgumentException('Comment ID didn\'t set');
                 }
 
-                $task = $data->getComment()->getTask();
+                $task = $data_comment->getTask();
                 $client = $task->getClient();
                 $worker = $task->getWorker();
+
+                // Проверяем, есть ли уже к этому комментарию отметка времени
+                $exists = $this->entityManager->getRepository(TimeSpend::class)->findOneBy([
+                    'comment' => $data_comment->getId()
+                ]);
+
+
+                if ($exists) {
+                    throw new \InvalidArgumentException('Комментарий уже имеет отметку времени.');
+                }
 
                 if (in_array('ROLE_ADMIN', $roles) && $worker->getUserId() != $user) {
                     throw new \InvalidArgumentException('Исполнитель может добавить время только в свою задачу.');
@@ -53,6 +64,7 @@ final class TimeSpendProcessor implements ProcessorInterface
                 $data->setClient($client);
                 $data->setWorker($worker);
                 $data->setTask($task);
+                $data->setComment($data_comment);
 
                 // Если дата не указана, то устанавливаем текущую дату
                 if (!$data->getDate()) {
